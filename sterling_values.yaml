@@ -1,0 +1,14 @@
+# Put sterling-specific config in this file, which overrides the defaults in values.yaml
+ingress:
+  enabled: true
+  # https://wiki.renci.org/index.php/Kubernetes_Cloud/Sterling#How_to_set_up_Ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - host: neurobridges.apps.renci.org
+      paths:
+        - path: /
+  tls:
+   - secretName: neurobridges.apps.renci.org-tls
+     hosts:
+       - neurobridges.apps.renci.org

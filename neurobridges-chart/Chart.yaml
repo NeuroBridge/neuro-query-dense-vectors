@@ -1,0 +1,13 @@
+apiVersion: v2
+name: neurobridges
+description: A Helm chart for Kubernetes
+type: application
+
+# No need to increment this unless you push the chart somewhere for external users
+version: 1.0.0
+
+# If you change the version, run "helm dependency update" to update the .tgz file
+dependencies:
+  - name: elasticsearch
+    version: "7.17.3"
+    repository: https://helm.elastic.co
