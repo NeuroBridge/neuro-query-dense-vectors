@@ -1,0 +1,45 @@
+# Default values for neurobridges.
+# This is a YAML-formatted file.
+# Declare default variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: containers.renci.org/neurobridges/query
+  pullPolicy: IfNotPresent
+  tag: "1.0.0"
+
+service:
+  port: 8080
+
+ingress:
+  enabled: false
+
+# TODO: Tune these based on usage
+resources:
+  requests:
+    cpu: 100m
+    memory: 200Mi
+  limits:
+    memory: 500Mi
+
+
+# These values affect the elasticsearch subchart: https://github.com/elastic/helm-charts/tree/main/elasticsearch
+elasticsearch:
+  replicas: 1
+  minimumMasterNodes: 1
+
+  volumeClaimTemplate:
+    resources:
+      requests:
+        storage: 10Gi
+  
+  resources:
+    limits:
+      # https://wiki.renci.org/index.php/Kubernetes_Cloud/Sterling#Request_an_exemption_from_CPU_limits
+      cpu: null
+      memory: 2Gi
+  
+  # Disable the init container since it requires privileged access
+  sysctlInitContainer:
+    enabled: false
