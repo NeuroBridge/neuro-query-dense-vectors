@@ -1,0 +1,26 @@
+#####################################################
+#
+# A container for processing the sparc data download
+#
+######################################################
+FROM python:3.8.5-slim
+
+# Create some needed local directories
+RUN mkdir -p /usr/share/man/man1
+RUN mkdir -p /usr/local/renci/bin
+RUN mkdir -p /usr/local/renci/data
+
+# Install required packages
+RUN apt-get update && \
+    pip3 install elasticsearch==7.12.0 && \
+    pip3 install transformers && \
+    pip3 install torch && \
+    rm -rf /var/cache/apk/*
+
+# Move some local executables into the bin directory
+ADD loadNeuroQueryTermsSapBert.py /usr/local/renci/bin
+ADD data-neuroquery_version-1_vocab-neuroquery7547_vocabulary.txt /usr/local/renci/data
+
+# Call process_input.sh with the 2 user provided input and output files
+ENTRYPOINT ["/usr/local/renci/bin/loadNeuroQueryTermsSapBert.py"]
+CMD ["--termFile", "/usr/local/renci/data/data-neuroquery_version-1_vocab-neuroquery7547_vocabulary.txt", "--indexName", "dockerindex", "--shards", "1"]

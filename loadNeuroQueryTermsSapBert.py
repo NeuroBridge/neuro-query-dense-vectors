@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import argparse
 from xml.etree import ElementTree as ET
 import config
