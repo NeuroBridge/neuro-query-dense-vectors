@@ -1,18 +1,23 @@
-# Used by both loadDenseVectors.py and dugSearch.py
 # Elasticsearch ip and port
-ELASTIC_IP = "localhost"
+ELASTIC_IP = "host.docker.internal"
+#ELASTIC_IP = "0.0.0.0"
 ELASTIC_PORT = 9200
 
-# Used only by dugSearchApp.py
-# Min score for the match
+# Default threshold and number of search results to return
 SEARCH_THRESH = 1.8
 SEARCH_NUMBER = 25
 
-# Used only by dugSearchApp.py
-# Index to search. 
-#ELASTIC_INDEX = "dug1"
-ELASTIC_INDEX = "neuro1"
-ELASTIC_INDEX_SAP = "sapbert"
-#ELASTIC_INDEX = "word1
-SEARCH_PORT = 13375
-SEARCH_PORT_SAP = 13376
+# Index to search for NeuroBridge terms. 
+NEUROBRIDGE_ELASTIC_INDEX= "neuro_query_docker"
+
+# Port and IP exposed by the server
+SEARCH_PORT = 13376
+SEARCH_IP = "0.0.0.0"
+
+# The NeuroQuery term file
+# local term file
+#NEUROQUERY_TERM_FILE = "data-neuroquery_version-1_vocab-neuroquery7547_vocabulary.txt"
+
+# docker based term file
+NEUROQUERY_TERM_FILE = "/usr/local/renci/data/data-neuroquery_version-1_vocab-neuroquery7547_vocabulary.txt"
+

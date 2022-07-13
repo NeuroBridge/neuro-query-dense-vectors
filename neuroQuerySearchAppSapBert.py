@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from flask import Flask, request
 from flask_cors import CORS
 from transformers import AutoTokenizer, AutoModel
@@ -6,6 +7,8 @@ import torch
 from elasticsearch import Elasticsearch
 import sys
 from timeit import default_timer as timer
+from neuroquery import fetch_neuroquery_model, NeuroQueryModel
+import pandas
 
 # Define the app
 app = Flask(__name__)
@@ -14,65 +17,94 @@ app.config.from_object('config')
 # Set CORS policies
 CORS(app)
 
+print("Before tokenizer and model")
 tokenizer = AutoTokenizer.from_pretrained("cambridgeltl/SapBERT-from-PubMedBERT-fulltext")
 model = AutoModel.from_pretrained("cambridgeltl/SapBERT-from-PubMedBERT-fulltext")
+print("After tokenizer and model")
 
 def connectElastic(ip, port):
     # Connect to an elasticsearch node with the given ip and port
-    esConn = None
+    returnConn = None
 
-    esConn = Elasticsearch([{"host": ip, "port": port}])
-    if esConn.ping():
+    returnConn = Elasticsearch([{"host": ip, "port": port}])
+    if returnConn.ping():
         print("Connected to elasticsearch...")
     else:
         print("Elasticsearch connection error..")
         sys.exit(1)
 
-    return esConn
+    return returnConn
 
 # Connect to es node
 esConn = connectElastic(app.config['ELASTIC_IP'], app.config['ELASTIC_PORT'])
 
-@app.route("/query", methods=["GET"])
-def qa():
-    print (f"app.config['SEARCH_NUMBER'] is {app.config['SEARCH_NUMBER']}")
+# The route to do a similarity search against the NeuroBridge ontology
+@app.route("/neurobridge", methods=["GET"])
+def searchNeuroBridge():
     # API to return top_n matched records for a given query
+
+    # Get default values for the number of matches and the search threshold
+    print (f"app.config['SEARCH_NUMBER'] is {app.config['SEARCH_NUMBER']}")
     matches = app.config['SEARCH_NUMBER']
     thresh = app.config['SEARCH_THRESH']
 
-    if request.args.get("max_res"):
-        matches = request.args.get("max_res")
-        print (f"matches is {matches}")
+    # the number of matches
+    if request.args.get("matches"):
+        matches = request.args.get("matches")
         matches = int(matches)
+        print (f"matches is {matches}")
 
-    if request.args.get("min_score"):
-        thresh = request.args.get("min_score")
+    # the search threshold
+    if request.args.get("thresh"):
+        thresh = request.args.get("thresh")
         thresh = float(thresh)
         print (f"thresh is {thresh}")
 
-    if request.args.get("query"):
-        userQuery = request.args.get("query")
-        print (f"userQuery is {userQuery}")
+    # the query to match
+    if request.args.get("searchTerms"):
+        searchTerms = request.args.get("searchTerms")
+        print (f"searchTerms is {searchTerms}")
 
         # Generate embeddings for the input query
-        toks = tokenizer.batch_encode_plus([userQuery],
+        toks = tokenizer.batch_encode_plus([searchTerms],
                                            padding="max_length",
                                            max_length=25,
                                            truncation=True,
                                            return_tensors="pt")
         output = model(**toks)
-        cls_rep = output[0][:,0,:]
-
         queryTensor = output[0][:,0,:]
         queryVec = queryTensor.detach().numpy()
-        # print (f"queryVec is {queryVec}")
 
         # Retrieve the semantically similar records for the query
-        records = semanticSearch(queryVec[0], app.config['ELASTIC_INDEX_SAP'], thresh, matches)
+        records = semanticSearch(queryVec[0], app.config['NEUROBRIDGE_ELASTIC_INDEX'], thresh, matches)
     else:
         return {"error": "Couldn't process your request"}, 422
     return {"data": records}
 
+# The route to do a search using the NeuroQuery API
+# Possible ToDo: have this query respect the thresh and matches parameters
+@app.route("/neuroquery", methods=["GET"])
+def searchNeuroQuery():
+
+    records = []
+
+    # API to return top_n matched records for a given query
+    if request.args.get("searchTerms"):
+        print("in searchNeuroQuery")
+        userQuery = request.args.get("searchTerms")
+
+        encoder = NeuroQueryModel.from_data_dir(fetch_neuroquery_model())
+        result = encoder(userQuery)
+
+        # we want to return the title and the pubmed_url
+        for index,row in result["similar_documents"].iterrows():
+           records.append({'pmid': row['pmid'], 'title': row['title'], 'pubmed_url': row['pubmed_url'], 'similarity': row['similarity']})
+
+    else:
+        return {"error": "Couldn't process your request"}, 422
+    return {"data": records}
+
+# Query the elastic search index 
 def semanticSearch(queryVec, index, thresh, top_n):
     # Retrieve top_n semantically similar records for the given query vector
     if not esConn.indices.exists(index):
@@ -111,6 +143,7 @@ def semanticSearch(queryVec, index, thresh, top_n):
     return data
 
 if __name__ == '__main__':
-    listenPort = app.config['SEARCH_PORT_SAP']
+    listenPort = app.config['SEARCH_PORT']
+    listenMachine = app.config['SEARCH_IP']
     from waitress import serve
-    serve (app, host="0.0.0.0", port=listenPort)
+    serve (app, host=listenMachine, port=listenPort)

@@ -26,10 +26,10 @@ import sys
 
 def main(args):
 
-   # Extract command line args
-   indexName = args.indexName
-   termFile = Path(args.termFile)
-   shards = args.shards
+   # Extract params from config
+   indexName = config.NEUROBRIDGE_ELASTIC_INDEX
+   termFile = config.NEUROQUERY_TERM_FILE
+   shards = "1"
 
    # Connect to elasticSearch
    esConn = connectElastic(config.ELASTIC_IP, config.ELASTIC_PORT)
@@ -126,15 +126,5 @@ def createIndex(indexName, shards, esConn):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description="Load NeuroQuery terms into a ElasticSearch dense vector")
-    parser.add_argument('--termFile',  action="store", 
-                        help= "Specify the dir the file containing terms to load")
-    parser.add_argument('--indexName',  action="store", 
-                        help ="The name of the index in to which to load the data")
-    parser.add_argument('--shards',  action="store", 
-                        help ="The number of shards in the index.",
-                        default =1)
-
-    args = parser.parse_args()
-
+    args = "none"
     main(args)
