@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: neurobridge-configmap
+  data:
+    ELASTIC_IP: "host.docker.internal"
+    ELASTIC_PORT: 9200
+
+    SEARCH_THRESH: 1.8
+    SEARCH_NUMBER: 25
+    NEUROBRIDGE_ELASTIC_INDEX: "neuro_query_docker"
+    SEARCH_PORT: 13376
+    SEARCH_IP: "0.0.0.0"
+    NEUROQUERY_TERM_FILE: "/usr/local/renci/data/data-neuroquery_version-1_vocab-neuroquery7547_vocabulary.txt"
