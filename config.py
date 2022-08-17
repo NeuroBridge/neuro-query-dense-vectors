@@ -1,5 +1,6 @@
 # Elasticsearch ip and port
-ELASTIC_IP = "host.docker.internal"
+#ELASTIC_IP = "host.docker.internal"
+ELASTIC_IP = "elasticsearch-master"
 #ELASTIC_IP = "0.0.0.0"
 ELASTIC_PORT = 9200
 

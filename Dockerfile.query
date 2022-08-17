@@ -25,6 +25,9 @@ RUN apt-get update && \
 
 # Move some local executables into the bin directory
 ADD neuroQuerySearchAppSapBert.py /usr/local/renci/bin
+ADD config.py /usr/local/renci/bin
+ENV PYTHONPATH "${PYTHONPATH}:/usr/local/renci/bin"
+ENV PYTHONUNBUFFERED 10
 
 # Start the code
-ENTRYPOINT ["/usr/local/renci/bin/neuroQuerySearchAppSapBert.py"]
+ENTRYPOINT ["sh", "-c", "/usr/local/renci/bin/neuroQuerySearchAppSapBert.py"]

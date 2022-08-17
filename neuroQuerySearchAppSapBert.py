@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from transformers import AutoTokenizer, AutoModel
 import numpy as np
@@ -9,6 +9,7 @@ import sys
 from timeit import default_timer as timer
 from neuroquery import fetch_neuroquery_model, NeuroQueryModel
 import pandas
+import time
 
 # Define the app
 app = Flask(__name__)
@@ -27,16 +28,27 @@ def connectElastic(ip, port):
     returnConn = None
 
     returnConn = Elasticsearch([{"host": ip, "port": port}])
-    if returnConn.ping():
-        print("Connected to elasticsearch...")
-    else:
-        print("Elasticsearch connection error..")
-        sys.exit(1)
+    while(not returnConn.ping()):
+       print("waiting for elasticsearch")
+       time.sleep(60)
+       returnConn = Elasticsearch([{"host": ip, "port": port}])
+#   if returnConn.ping():
+#       print("Connected to elasticsearch...")
+#   else:
+#       print("Elasticsearch connection error..")
+#       sys.exit(1)
 
     return returnConn
 
 # Connect to es node
+print(app.config['ELASTIC_IP'])
+print(app.config['ELASTIC_PORT'])
 esConn = connectElastic(app.config['ELASTIC_IP'], app.config['ELASTIC_PORT'])
+
+# A route added for kubernetes
+@app.route("/healthz", methods=["GET"])
+def healthz():
+    return jsonify(""), 200
 
 # The route to do a similarity search against the NeuroBridge ontology
 @app.route("/neurobridge", methods=["GET"])
@@ -106,7 +118,7 @@ def searchNeuroQuery():
 
 # Query the elastic search index 
 def semanticSearch(queryVec, index, thresh, top_n):
-    # Retrieve top_n semantically similar records for the given query vector
+    # Retriove top_n semantically similar records for the given query vector
     if not esConn.indices.exists(index):
         return "No records found"
     s_body = {
@@ -144,6 +156,8 @@ def semanticSearch(queryVec, index, thresh, top_n):
 
 if __name__ == '__main__':
     listenPort = app.config['SEARCH_PORT']
+    listenPort = 8080
     listenMachine = app.config['SEARCH_IP']
+    print ("listen port :", listenPort)
     from waitress import serve
     serve (app, host=listenMachine, port=listenPort)
