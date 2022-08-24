@@ -6,8 +6,9 @@ replicaCount: 1
 
 image:
   repository: containers.renci.org/neurobridges/neuroquery_webapp
-  pullPolicy: IfNotPresent
   tag: "1.0.2"
+  loaderRepository: containers.renci.org/neurobridges/neuroquery_load
+  loaderTag: "1.0.0"
 
 service:
   port: 8080
@@ -21,7 +22,14 @@ resources:
     cpu: 1000m
     memory: 500Mi
   limits:
-    memory: 5000Mi
+    memory: 2000Mi
+
+loaderResources:
+  requests:
+    cpu: 1000m
+    memory: 500Mi
+  limits:
+    memory: 2000Mi
 
 
 # These values affect the elasticsearch subchart: https://github.com/elastic/helm-charts/tree/main/elasticsearch
