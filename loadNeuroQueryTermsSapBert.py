@@ -41,6 +41,15 @@ def main(args):
    insertDataIntoIndex(termFile, indexName, shards, esConn)
 
 def insertDataIntoIndex(termFile, indexName, shards, esConn):
+
+    # First question: has the data already been loaded?
+    res = esConn.indices.refresh(indexName)
+    res = esConn.cat.count(indexName, params={"format": "json"})
+    nData = (res[0]['count'])
+    if int(nData) > 0:
+       print (f"{nData} data items already loaded")
+       sys.exit(1)
+
     tokenizer = AutoTokenizer.from_pretrained("cambridgeltl/SapBERT-from-PubMedBERT-fulltext")  
     model = AutoModel.from_pretrained("cambridgeltl/SapBERT-from-PubMedBERT-fulltext")
     rowId = 1
@@ -74,12 +83,20 @@ def connectElastic(ip, port):
     # Connect to an elasticsearch node with the given ip and port
     esConn = None
 
+    print(f"port is {port}")
+    print(f"host is {ip}")
+
     esConn = Elasticsearch([{"host": ip, "port": port}])
-    if esConn.ping():
-        print("Connected to elasticsearch...")
-    else:
-        print("Elasticsearch connection error..")
-        sys.exit(1)
+
+    try:
+       if esConn.ping():
+           print("Connected to elasticsearch...")
+       else:
+           print("Elasticsearch connection error..")
+           print(esConn)
+           sys.exit(1)
+    except:
+       print("error caught")
 
     return esConn
 
