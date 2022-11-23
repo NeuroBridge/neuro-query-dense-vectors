@@ -1,0 +1,39 @@
+---
+openapi: 3.0.0
+info:
+  title: NeuroQuery Webapp
+  version: 1.0.0
+  description: An API to help the NeuroBridge portal interact with the NeuroQuery API
+
+#servers:
+#  -url: localhost:9400
+
+paths:
+  "/neuroquery":
+    get:
+      description: Interact with the NeuroQuery API
+      operationId: neuroquery
+      parameters:
+      - name: searchTerms
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The neuroquery terms
+          content:
+            application/json:
+              schema:
+                 type: array
+                 items:
+                   type: object
+                   properties:
+                    pmid:
+                      type: integer
+                    pubmed_url:
+                      type: string
+                    similarity:
+                      type: number
+                    title:
+                      type: string
