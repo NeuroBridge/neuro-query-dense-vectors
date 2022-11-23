@@ -25,15 +25,18 @@ paths:
           content:
             application/json:
               schema:
-                 type: array
-                 items:
-                   type: object
-                   properties:
-                    pmid:
-                      type: integer
-                    pubmed_url:
-                      type: string
-                    similarity:
-                      type: number
-                    title:
-                      type: string
+                 type: object
+                 properties:
+                   data:
+                     type: array
+                     items:
+                       type: object
+                       properties:
+                         pmid:
+                           type: integer
+                         pubmed_url:
+                           type: string
+                         similarity:
+                           type: number
+                         title:
+                           type: string
