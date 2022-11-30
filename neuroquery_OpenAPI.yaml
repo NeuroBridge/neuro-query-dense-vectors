@@ -1,12 +1,12 @@
 ---
-openapi: 3.0.0
+openapi: 3.0.2
 info:
   title: NeuroQuery Webapp
   version: 1.0.0
   description: An API to help the NeuroBridge portal interact with the NeuroQuery API
 
-#servers:
-#  -url: localhost:9400
+servers:
+  - url: https://neurobridges.apps.renci.org
 
 paths:
   "/neuroquery":
@@ -15,7 +15,7 @@ paths:
       operationId: neuroquery
       parameters:
       - name: searchTerms
-        in: path
+        in: query
         required: true
         schema:
           type: string
