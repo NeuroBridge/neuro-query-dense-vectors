@@ -40,3 +40,56 @@ paths:
                            type: number
                          title:
                            type: string
+
+  "/neurobridge":
+    get:
+      description: Interact with the NeuroBridge SapBert term matching API
+      operationId: neurobridge
+      parameters:
+      - name: searchTerms
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: matches
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: thresh
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The neurobridge matching terms
+          content:
+            application/json:
+              schema:
+                 type: object
+                 properties:
+                   data:
+                    type: array
+                    properties:
+                      anyOf:
+                       - $ref: '#/components/schemas/SearchTime'
+                       - $ref: '#/components/schemas/Results'
+
+components:
+  schemas:
+    SearchTime:
+      type: object
+      properties:
+        search_time:
+          type: number
+
+    Results: 
+      type: object
+      properties:
+        score:
+          type: number
+        term:
+          type: string
+        term_name:
+          type: string
