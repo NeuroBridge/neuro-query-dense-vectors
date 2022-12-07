@@ -29,5 +29,9 @@ ADD config.py /usr/local/renci/bin
 ENV PYTHONPATH "${PYTHONPATH}:/usr/local/renci/bin"
 ENV PYTHONUNBUFFERED 10
 
+RUN useradd -ms /bin/bash neurobridge
+USER neurobridge
+WORKDIR /home/neurobridge
+
 # Start the code
 ENTRYPOINT ["sh", "-c", "/usr/local/renci/bin/neuroQuerySearchAppSapBert.py"]

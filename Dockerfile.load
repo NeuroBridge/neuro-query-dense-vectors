@@ -24,5 +24,9 @@ ADD data-neuroquery_version-1_vocab-neuroquery7547_vocabulary.txt /usr/local/ren
 ENV PYTHONPATH "${PYTHONPATH}:/usr/local/renci/bin"
 ENV PYTHONUNBUFFERED 10
 
+RUN useradd -ms /bin/bash neurobridge
+USER neurobridge
+WORKDIR /home/neurobridge
+
 # Call process_input.sh with the 2 user provided input and output files
 ENTRYPOINT ["/usr/local/renci/bin/loadNeuroQueryTermsSapBert.py"]
