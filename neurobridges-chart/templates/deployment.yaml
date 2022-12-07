@@ -35,7 +35,7 @@ spec:
             {{- toYaml .Values.loaderResources | nindent 12 }}
           volumeMounts:
             - name: cache
-              mountPath: /root/.cache/
+              mountPath: /home/neurobridge/.cache/
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -63,7 +63,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: cache
-              mountPath: /root/.cache/
+              mountPath: /home/neurobridge/.cache/
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
