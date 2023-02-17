@@ -48,7 +48,7 @@ def insertDataIntoIndex(termFile, indexName, shards, esConn):
     nData = (res[0]['count'])
     if int(nData) > 0:
        print (f"{nData} data items already loaded")
-       sys.exit(1)
+       sys.exit(0)
 
     tokenizer = AutoTokenizer.from_pretrained("cambridgeltl/SapBERT-from-PubMedBERT-fulltext")  
     model = AutoModel.from_pretrained("cambridgeltl/SapBERT-from-PubMedBERT-fulltext")
@@ -122,6 +122,7 @@ def createIndex(indexName, shards, esConn):
         },
         "settings": {
            "number_of_shards": nShards
+           "number_of_replicas": 0
         }
     }
     """
