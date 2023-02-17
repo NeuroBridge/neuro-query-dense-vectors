@@ -30,7 +30,7 @@ def connectElastic(ip, port):
     returnConn = Elasticsearch([{"host": ip, "port": port}])
     while(not returnConn.ping()):
        print("waiting for elasticsearch")
-       time.sleep(60)
+       time.sleep(5)
        returnConn = Elasticsearch([{"host": ip, "port": port}])
 #   if returnConn.ping():
 #       print("Connected to elasticsearch...")
