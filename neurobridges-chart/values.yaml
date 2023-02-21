@@ -20,9 +20,9 @@ ingress:
 resources:
   requests:
     cpu: 100m
-    memory: 200Mi
+    memory: 2000Mi
   limits:
-    memory: 200Mi
+    memory: 2000Mi
 
 loaderResources:
   requests:

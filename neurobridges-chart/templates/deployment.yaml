@@ -50,18 +50,21 @@ spec:
               path: /healthz
               port: http
             failureThreshold: 30
+            initialDelaySeconds: 10
             periodSeconds: 30
           livenessProbe:
             httpGet:
               path: /healthz
               port: http
             failureThreshold: 30
+            initialDelaySeconds: 10
             periodSeconds: 30
           readinessProbe:
             httpGet:
               path: /healthz
               port: http
             failureThreshold: 30
+            initialDelaySeconds: 10
             periodSeconds: 30
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
