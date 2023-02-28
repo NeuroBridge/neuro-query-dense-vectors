@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: containers.renci.org/neurobridges/neuroquery_webapp
-  tag: "1.0.4"
+  tag: "1.0.5"
   loaderRepository: containers.renci.org/neurobridges/neuroquery_load
   loaderTag: "1.0.3"
 
@@ -20,16 +20,16 @@ ingress:
 resources:
   requests:
     cpu: 100m
-    memory: 2000Mi
+    memory: 1500Mi
   limits:
-    memory: 2000Mi
+    memory: 1500Mi
 
 loaderResources:
   requests:
     cpu: 100m
-    memory: 200Mi
+    memory: 1500Mi
   limits:
-    memory: 200Mi
+    memory: 1500Mi
 
 
 # These values affect the elasticsearch subchart: https://github.com/elastic/helm-charts/tree/main/elasticsearch

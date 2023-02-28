@@ -4,7 +4,7 @@ metadata:
   name: {{ .Release.Name }}-huggingface-cache
 spec:
   accessModes:
-  - ReadWriteOnce
+  - ReadWriteMany
   resources:
     requests:
       storage: 1Gi

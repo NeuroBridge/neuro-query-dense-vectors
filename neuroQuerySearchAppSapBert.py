@@ -73,25 +73,32 @@ def searchNeuroBridge():
         print (f"thresh is {thresh}")
 
     # the query to match
+    completeResults = []
     if request.args.get("searchTerms"):
-        searchTerms = request.args.get("searchTerms")
-        print (f"searchTerms is {searchTerms}")
+        searchTermsFromUser = request.args.get("searchTerms")
+        print (f"searchTermsFromUser is {searchTermsFromUser}")
 
-        # Generate embeddings for the input query
-        toks = tokenizer.batch_encode_plus([searchTerms],
-                                           padding="max_length",
-                                           max_length=25,
-                                           truncation=True,
-                                           return_tensors="pt")
-        output = model(**toks)
-        queryTensor = output[0][:,0,:]
-        queryVec = queryTensor.detach().numpy()
+        # The user input can be a "," separated list of terms
+        searchTermsList = searchTermsFromUser.split(",")
 
-        # Retrieve the semantically similar records for the query
-        records = semanticSearch(queryVec[0], app.config['NEUROBRIDGE_ELASTIC_INDEX'], thresh, matches)
+        for searchTerms in searchTermsList:
+           # Generate embeddings for the input query
+           toks = tokenizer.batch_encode_plus([searchTerms],
+                                              padding="max_length",
+                                              max_length=25,
+                                              truncation=True,
+                                              return_tensors="pt")
+           output = model(**toks)
+           queryTensor = output[0][:,0,:]
+           queryVec = queryTensor.detach().numpy()
+
+           # Retrieve the semantically similar records for the query
+           records = semanticSearch(queryVec[0], app.config['NEUROBRIDGE_ELASTIC_INDEX'], thresh, matches)
+           recordsWithSearchTerm = {searchTerms: records}
+           completeResults.append(recordsWithSearchTerm)
     else:
         return {"error": "Couldn't process your request"}, 422
-    return {"data": records}
+    return {"data": completeResults}
 
 # The route to do a search using the NeuroQuery API
 # Possible ToDo: have this query respect the thresh and matches parameters
@@ -144,7 +151,7 @@ def semanticSearch(queryVec, index, thresh, top_n):
     total_match = len(result["hits"]["hits"])
     print("Total Matches: ", str(total_match))
     data = []
-    data.append({'search_time': searchTime})
+    #data.append({'search_time': searchTime})
     if total_match > 0:
         row_ids = []
         for hit in result["hits"]["hits"]:
