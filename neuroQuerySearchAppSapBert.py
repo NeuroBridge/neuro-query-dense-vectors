@@ -162,7 +162,7 @@ def semanticSearch(queryVec, index, thresh, top_n):
     return data
 
 if __name__ == '__main__':
-    listenPort = app.config['SEARCH_PORT']
+ #  listenPort = app.config['SEARCH_PORT']
     listenPort = 8080
     listenMachine = app.config['SEARCH_IP']
     print ("listen port :", listenPort)

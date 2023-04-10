@@ -12,6 +12,7 @@ RUN mkdir -p /usr/local/renci/data
 
 # Install required packages
 RUN apt-get update && \
+    pip3 install numpy==1.21.4 && \
     pip3 install elasticsearch==7.12.0 && \
     pip3 install transformers && \
     pip3 install torch && \
@@ -19,12 +20,14 @@ RUN apt-get update && \
     pip3 install flask_cors==3.0.10 && \
     pip3 install neuroquery==1.0.2 && \
     pip3 install nilearn==0.8.1 && \
-    pip3 install pandas==1.0.1 && \
+    pip3 install pandas==1.5.3 && \
     pip3 install waitress==2.0.0 && \
+    pip3 install gunicorn==20.1.0 && \
     rm -rf /var/cache/apk/*
 
 # Move some local executables into the bin directory
 ADD neuroQuerySearchAppSapBert.py /usr/local/renci/bin
+ADD wsgi.py /usr/local/renci/bin
 ADD config.py /usr/local/renci/bin
 ENV PYTHONPATH "${PYTHONPATH}:/usr/local/renci/bin"
 ENV PYTHONUNBUFFERED 10
@@ -34,4 +37,5 @@ USER neurobridge
 WORKDIR /home/neurobridge
 
 # Start the code
-ENTRYPOINT ["sh", "-c", "/usr/local/renci/bin/neuroQuerySearchAppSapBert.py"]
+#ENTRYPOINT ["sh", "-c", "/usr/local/renci/bin/neuroQuerySearchAppSapBert.py"]
+CMD	["gunicorn","-w", "4", "--bind", "0.0.0.0:8080", "wsgi:app"]
