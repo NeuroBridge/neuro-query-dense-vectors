@@ -48,6 +48,8 @@ def main(ags):
    # Find all class elements in the OWL file
    class_elements = root.findall(".//owl:Class", namespaces=owl_ns)
 
+   allData = {}
+
    # Loop through the class elements and extract properties
    for class_element in class_elements:
        class_id = class_element.get("{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about")
@@ -57,7 +59,11 @@ def main(ags):
           concept = classArray[1]
           #print("concept:", concept)
           data = findSearchTermMatches(concept, 10, 1.0, tokenizer, model, esConn)
-          print (json.dumps(data, indent=4))
+          allData[concept] = data
+
+   #print (json.dumps(allData, indent=4))
+   with open(args.output, 'w') as outputFile:
+      json.dump(allData, outputFile, indent=4)
 
 def connectElastic(ip, port):
     # Connect to an elasticsearch node with the given ip and port
@@ -96,7 +102,8 @@ def findSearchTermMatches(searchTerm, matches, thresh, tokenizer, model, esConn)
     records = semanticSearch(queryVec[0], config.NEUROBRIDGE_ELASTIC_INDEX, thresh, matches, esConn)
     recordsWithSearchTerm = {searchTerm: records}
     completeResults.append(recordsWithSearchTerm)
-    return {"data": completeResults}
+    #return {"data": completeResults}
+    return completeResults
 
 # Query the elastic search index 
 def semanticSearch(queryVec, index, thresh, top_n, esConn):
