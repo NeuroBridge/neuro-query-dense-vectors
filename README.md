@@ -25,3 +25,7 @@ helm template neurobridges-chart -n neurobridges -f sterling_values.yaml | less
 ```
 
 I recommend installing the [helm diff](https://github.com/databus23/helm-diff) plugin, which helps make upgrades less scary since you know exactly what will change.
+
+### `neurobridges-query` deployment `/healthz` endpoint timeout
+
+The deployments have startup/liveness probes which hit the /healthz endpoint on a specified port. We had an incident on 8-28-23 after a power loss when all the pods were restarting. The `neurobridges-query` deployment was unresponsive and the liveness probe was producing an error. The issue was fixed by uninstalling the `neurobridges` release and reinstalling. Be aware it may take some time for the container to properly deploy and accept requests.
