@@ -18,7 +18,7 @@ RUN apt-get update && \
     pip3 install torch && \
     pip3 install Flask==2.1.0 && \
     pip3 install flask_cors==3.0.10 && \
-    pip3 install neuroquery==1.0.2 && \
+    pip3 install neuroquery==1.0.4 && \
     pip3 install nilearn==0.8.1 && \
     pip3 install pandas==1.5.3 && \
     pip3 install waitress==2.0.0 && \
