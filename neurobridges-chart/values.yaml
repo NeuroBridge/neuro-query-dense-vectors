@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: containers.renci.org/neurobridges/neuroquery_webapp
-  tag: "1.0.7"
+  tag: "1.0.8"
   loaderRepository: containers.renci.org/neurobridges/neuroquery_load
   loaderTag: "1.0.3"
 
@@ -20,9 +20,9 @@ ingress:
 resources:
   requests:
     cpu: 100m
-    memory: 3000Mi
+    memory: 2500Mi
   limits:
-    memory: 3000Mi
+    memory: 2500Mi
 
 loaderResources:
   requests:
